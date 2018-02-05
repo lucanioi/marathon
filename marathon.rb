@@ -1,5 +1,6 @@
 require 'pry-byebug'
 require 'benchmark'
+require_relative 'runner'
 
 class Marathon
   class MarathonCancelled < Exception; end
@@ -7,23 +8,19 @@ class Marathon
   FILES_PATH = 'marathon/runners/*.rb'
   FILES = %w(blue red green)
 
-  Runner = Struct.new(:name, :code)
-
   def initialize
     @runners = []
-    @results = {}
   end
 
-  def run
+  def start
     ready
     set
     go
-    scores
   end
 
   private
 
-  attr_reader :laps, :runners, :results, :shell_arg
+  attr_reader :laps, :runners, :results
 
   def ready
     @laps = get_laps || 1
@@ -35,21 +32,21 @@ class Marathon
       next unless FILES.include? name
       code = File.read(path)
 
-      runners << Runner.new(name, code)
+      runners << Runner.new(name: name, code: code, laps: laps)
     end
   end
 
   def go
-    runners.each do |runner|
-      results[runner.name] = time(runner.code)
+    race do |x|
+      runners.each do |runner|
+        x.report(runner.name) { runner.run }
+      end
     end
   end
 
-  def scores
-    sorted_results = results.sort_by { |_k, v| v.real }.to_h
-
-    sorted_results.each do |k, v|
-      printf "%-5s %s\n", k, v
+  def race(&blk)
+    Benchmark.bm(6) do |x|
+      blk.call(x)
     end
   end
 
@@ -62,14 +59,6 @@ class Marathon
 
   def shell_arg
     ARGV[1]
-  end
-
-  def time(code)
-    Benchmark.measure do
-      laps.times do
-        eval(code)
-      end
-    end
   end
 end
 
