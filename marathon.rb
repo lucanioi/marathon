@@ -35,7 +35,7 @@ class Marathon
 
   def go
     benchmark do |bm|
-      runners.reverse_each do |runner|
+      runners.each do |runner|
         bm.report(runner.name) { runner.run }
       end
     end

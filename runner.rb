@@ -6,12 +6,12 @@ class Runner
   end
 
   FILES = [
-    'analytics/generator'
+    # put files you want required
   ].freeze
 
   GEMS = [
-    'pry-byebug'
-  ]
+    # put gems you want required
+  ].freeze
 
   def initialize(name:, code:, laps:, setup:)
     @name    = name
