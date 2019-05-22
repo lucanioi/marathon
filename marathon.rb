@@ -5,8 +5,8 @@ require_relative 'runner'
 class Marathon
   class MarathonCancelled < Exception; end
 
-  FILES_PATH = 'marathon/runners/*.rb'.freeze
-  SHARED_CONTEXT_PATH = 'marathon/utilities/shared_context.rb'.freeze
+  FILES_PATH = 'runners/*.rb'.freeze
+  SHARED_CONTEXT_PATH = 'utilities/shared_context.rb'.freeze
   FILES = %w(blue red green).freeze
   DIVIDER = '#====================== setup above, code below =======================#'.freeze
 
@@ -41,18 +41,15 @@ class Marathon
     end
   end
 
-  def set_runners
-    Dir[FILES_PATH].each do |path|
-      name = File.basename(path, '.rb')
-      next unless FILES.include? name
-      setup, code = split_setup_and_code File.read(path)
-
-      runners << Runner.new(name: name, code: code, setup: setup, laps: laps)
-    end
-  end
-
   def set_shared_context
     Runner.shared_context = File.read(SHARED_CONTEXT_PATH)
+  end
+
+  def set_runners
+    runner_files do |file, name|
+      setup, code = split_setup_and_code File.read(file)
+      runners << Runner.new(name: name, code: code, setup: setup, laps: laps)
+    end
   end
 
   def benchmark(&blk)
@@ -74,6 +71,14 @@ class Marathon
     end
 
     file.split(divider)
+  end
+
+  def runner_files(&blk)
+    Dir[FILES_PATH].each do |path|
+      name = File.basename(path, '.rb')
+      next unless FILES.include? name
+      blk.call(path, name)
+    end
   end
 
   def divider
