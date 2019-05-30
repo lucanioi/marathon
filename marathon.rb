@@ -5,6 +5,7 @@ require_relative 'runner'
 class Marathon
   class MarathonCancelled < Exception; end
 
+  DEFAULT_LAPS = 100
   FILES_PATH = 'runners/*.rb'.freeze
   SHARED_CONTEXT_PATH = 'utilities/shared_context.rb'.freeze
   FILES = %w(blue red green).freeze
@@ -25,7 +26,8 @@ class Marathon
   attr_reader :laps, :runners, :results
 
   def ready
-    @laps = get_laps || 1
+    @laps = get_laps || DEFAULT_LAPS
+    puts "Running #{laps} laps..."
   end
 
   def set
