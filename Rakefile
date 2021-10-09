@@ -1,4 +1,4 @@
-require_relative 'marathon'
+require_relative 'lib/marathon'
 require_relative 'utilities/clean_slate'
 
 task :marathon do

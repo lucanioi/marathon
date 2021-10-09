@@ -6,7 +6,7 @@ class Marathon
   class MarathonCancelled < Exception; end
 
   DEFAULT_LAPS = 100
-  FILES_PATH = 'runners/*.rb'.freeze
+  FILES_PATH = '../runners/*.rb'.freeze
   SHARED_CONTEXT_PATH = 'utilities/shared_context.rb'.freeze
   FILES = %w(blue red green).freeze
   DIVIDER = '#====================== setup above, code below =======================#'.freeze

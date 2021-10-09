@@ -1,4 +1,4 @@
-require_relative '../marathon'
+require_relative '../lib/marathon'
 
 class Marathon
   def self.clean_slate
